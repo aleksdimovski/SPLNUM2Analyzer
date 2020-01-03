@@ -5,7 +5,7 @@ This tool is a research prototype static analyzer designed for performing numeri
 
 ## Author
 
-	Aleksandar Dimovski
+	Aleksandar Dimovski (Sven Apel, Axel Legay)
 	
 	
 # Installation
