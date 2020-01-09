@@ -16,6 +16,7 @@ open IntermediateSyntax
 %token TOK_IF;
 %token TOK_INT;
 %token TOK_UINT;
+%token TOK_CHAR;
 %token TOK_BOOL;
 %token TOK_FEAT;
 %token TOK_FOR;
@@ -91,6 +92,7 @@ global_decl:
 global_typ:
 	| TOK_INT	{ I_INT } 
 	| TOK_UINT TOK_INT	{ I_UINT } 
+	| TOK_CHAR	{ I_CHAR }
 
 declarator:
 	| d = annotate(TOK_id)										{ d, None }

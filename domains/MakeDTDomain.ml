@@ -626,7 +626,7 @@ let isLeq t1 t2 =
 
   (**)
 
-  	let fwdAssign t e =
+  	let fwdAssign t (l,e) =
     let domain = t.domain in 
     let env_vars = t.env_vars in
     let env_feats = t.env_feats in	
@@ -640,7 +640,19 @@ let isLeq t1 t2 =
             P.inner env_feats feats (cs@(P.constraints domain)) in
         if (P.isBot p') then Leaf (P.bot env_vars vars)
         else
-          Leaf (P.fwdAssign p e)
+          if (aExp_hasNoFeat e) then 
+		  	(
+			 let super_env = Environment.lce env_vars env_feats in 
+			 let cvars = List.map (fun c -> Lincons1.extend_environment c super_env) (P.constraints p) in (*EXTEND EVIRONMENT HERE*)
+			 let cfeats = List.map (fun c -> Lincons1.extend_environment c super_env) (P.constraints p') in (*EXTEND EVIRONMENT HERE*)
+			 let super_cons = cvars@cfeats in 
+			 let super_vars = vars@feats in 
+			 let super_p = P.inner super_env super_vars super_cons in 
+			 let super_p' = P.fwdAssign_project super_p (l,e) env_vars vars in 
+			 (*let project_p' = P.project super_p' env_vars vars in *)
+			 Format.fprintf !fmt "\n hasFEAT %d - %d - %d \n %a \n" (List.length super_cons) (Environment.size super_env) (List.length super_vars) P.print super_p'; 
+			 Leaf (super_p')) 
+		  else Leaf (P.fwdAssign p (l,e))
       | Node ((c1,nc1),l1,r1) ->
         let l = aux l1 (c1::cs) in
 		let r = aux r1 (nc1::cs) in

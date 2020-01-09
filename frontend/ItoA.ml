@@ -27,6 +27,18 @@ type feat = {
 
 let features: feat StringMap.t ref = ref StringMap.empty (* feature variables *)  
 
+(*
+(* arrays *)
+type arr = {
+  arrId: string;
+  arrName: string;
+  arrTyp: typ;
+  arrSize : int;
+}
+
+let arrays: arr StringMap.t ref = ref StringMap.empty (* array variables *)  
+*)
+
 (* exceptions *)
 exception ItoA_error of string 
 exception Modulo
@@ -85,6 +97,7 @@ let typ_itoa ((t: IntermediateSyntax.typ), (_: extent)): AbstractSyntax.typ =
   match t with
   | I_INT -> A_INT
   | I_UINT -> A_UINT
+  | I_CHAR -> A_CHAR
 
 (* expressions *)
 let rec exp_itoa 

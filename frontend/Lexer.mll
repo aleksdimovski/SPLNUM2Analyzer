@@ -24,6 +24,7 @@ let _ = List.iter (fun (a,b) -> Hashtbl.add keyword a b)
 		"if", TOK_IF;
 		"int", TOK_INT;
 		"unsigned", TOK_UINT;
+		"char", TOK_CHAR;
 		"bool", TOK_BOOL;
 		"features", TOK_FEAT;
 		"for", TOK_FOR;

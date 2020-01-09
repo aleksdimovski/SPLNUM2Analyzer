@@ -126,7 +126,7 @@ module Maketuple(P: PARTITION): TUPLE  = struct
     | _ -> raise (Invalid_argument "fwdAssign: unexpected lvalue")
 
 
-  let bwdAssign_underapprox (u:t) ((x,e): aExp * aExp) : t = match x with
+(*  let bwdAssign_underapprox (u:t) ((x,e): aExp * aExp) : t = match x with
     | A_var x ->
       	if not P.supports_underapproximation then
         	raise (Invalid_argument "Underapproximation not supported by this abstract domain, use polyhedra instead");	
@@ -135,7 +135,7 @@ module Maketuple(P: PARTITION): TUPLE  = struct
         let vars = u.vars in 
 		let configs = u.configs in 
 		{ elems = elems; env = env; vars = vars; configs = configs}
-    | _ -> raise (Invalid_argument "bwdAssign_underapprox: unexpected lvalue")
+    | _ -> raise (Invalid_argument "bwdAssign_underapprox: unexpected lvalue")   *)
 
   let bwdAssign u (x,e) = match x with
     | A_var x ->
@@ -149,14 +149,14 @@ module Maketuple(P: PARTITION): TUPLE  = struct
 
   (* we are here *)
   
-  let filter_underapprox (u:t) (e:bExp) : t = 
+(*  let filter_underapprox (u:t) (e:bExp) : t = 
     if not P.supports_underapproximation then
         raise (Invalid_argument "Underapproximation not supported by this abstract domain, use polyhedra instead");  
 	let elems = List.map (fun b -> P.filter_underapprox b e) u.elems in 
 	let env = u.env in
     let vars = u.vars in 
 	let configs = u.configs in 
-	{ elems = elems; env = env; vars = vars; configs = configs}
+	{ elems = elems; env = env; vars = vars; configs = configs}  *)
 
 
   let rec filter u e =

@@ -28,7 +28,7 @@ module Numerical(N: NUMERICAL)(C: CONSTRAINT): PARTITION = struct
   module C = C 
   module N = N 
 
-  module BanalApron = Banal_apron_domain.ApronDomain(N)
+(*  module BanalApron = Banal_apron_domain.ApronDomain(N)  *)
 
   (** An element of the numerical abstract domain. *)
   type t = { 
@@ -81,8 +81,14 @@ module Numerical(N: NUMERICAL)(C: CONSTRAINT): PARTITION = struct
   			| A_INT | A_BOOL -> aux xs cs
   			| A_UINT -> (* Format.fprintf Format.std_formatter "%a %s{%s}\n" typ_print x.varTyp x.varId x.varName; *)
 						  let cons = Lincons1.make (Linexpr1.make e) Lincons1.SUPEQ in
-  							Lincons1.set_array cons [| ((Coeff.s_of_int 1), (Var.of_string x.varId)) |] None; 
-						(* Lincons1.print Format.std_formatter cons; *) aux xs (cons::cs) 
+  						  Lincons1.set_array cons [| ((Coeff.s_of_int 1), (Var.of_string x.varId)) |] None; 
+						  aux xs (cons::cs) 
+  			| A_CHAR -> (* Format.fprintf Format.std_formatter "%a %s{%s}\n" typ_print x.varTyp x.varId x.varName; *)
+						  let cons1 = Lincons1.make (Linexpr1.make e) Lincons1.SUPEQ in
+  						  Lincons1.set_array cons1 [| ((Coeff.s_of_int 1), (Var.of_string x.varId)) |] None; 
+						  let cons2 = Lincons1.make (Linexpr1.make e) Lincons1.SUPEQ in
+  						  Lincons1.set_array cons2 [| ((Coeff.s_of_int (-1)), (Var.of_string x.varId)) |] (Some (Coeff.s_of_int 127)); 						  
+						  aux xs (cons1::cons2::cs) 						  
    in (*Format.fprintf Format.std_formatter "begin_top\n"; let cs = aux vs [] in*)
    {
     constraints = aux vs [];
@@ -90,6 +96,17 @@ module Numerical(N: NUMERICAL)(C: CONSTRAINT): PARTITION = struct
     vars = vs
   }
 
+  let project b env vars = 
+    let a = Lincons1.array_make b.env (List.length b.constraints) in
+    let i = ref 0 in
+    List.iter (fun c -> Lincons1.array_set a !i c; i := !i + 1) b.constraints;
+    let b = Abstract1.of_lincons_array manager b.env a in  
+	let b' = Abstract1.change_environment manager b env false in 
+	let c = Abstract1.to_lincons_array manager b' in
+    let cs = ref [] in
+    for i=0 to (Lincons1.array_length c)-1 do
+      cs := (Lincons1.array_get c i)::!cs; (*TODO: normalization *)
+    done; { constraints = !cs; env = env; vars = vars }
   (**)
 
   let isBot b =
@@ -209,7 +226,26 @@ module Numerical(N: NUMERICAL)(C: CONSTRAINT): PARTITION = struct
     | _ -> raise (Invalid_argument "fwdAssign: unexpected lvalue")
 
 
-  let bwdAssign_underapprox (t:t) ((x,e): aExp * aExp) : t = match x with
+  let fwdAssign_project b (x,e) env_project vars_project = match x with
+    | A_var x ->
+      let env = b.env in
+      let vars = b.vars in
+      let e = Texpr1.of_expr env (aExp_to_apron e) in
+      let a = Lincons1.array_make env (List.length b.constraints) in
+      let i = ref 0 in
+      List.iter (fun c -> Lincons1.array_set a !i c; i := !i + 1) b.constraints;
+      let b = Abstract1.of_lincons_array manager env a in
+      let b = Abstract1.assign_texpr manager b (Var.of_string x.varId) e None in
+	  let b' = Abstract1.change_environment manager b env_project false in 
+	  let a = Abstract1.to_lincons_array manager b' in	  
+      let cs = ref [] in
+      for i=0 to (Lincons1.array_length a)-1 do
+        let lc = (Lincons1.array_get a i) in if (not (Coeff.equal_int (Lincons1.get_cst lc) 65535)) then cs := lc::!cs; (*TODO: normalization *)
+      done; { constraints = !cs; env = env_project; vars = vars_project }
+    | _ -> raise (Invalid_argument "fwdAssign: unexpected lvalue")
+
+
+(*  let bwdAssign_underapprox (t:t) ((x,e): aExp * aExp) : t = match x with
     | A_var x ->
       if not N.supports_underapproximation then
         raise (Invalid_argument "Underapproximation not supported by this abstract domain, use polyhedra instead");
@@ -222,7 +258,7 @@ module Numerical(N: NUMERICAL)(C: CONSTRAINT): PARTITION = struct
       let assignValue = Function_banal_converter.of_aExp e in
       let assigned = BanalApron.bwd_assign at () assignDest assignValue pre in
       of_apron_t env vars assigned
-    | _ -> raise (Invalid_argument "bwdAssign_underapprox: unexpected lvalue")
+    | _ -> raise (Invalid_argument "bwdAssign_underapprox: unexpected lvalue")  *)
 
   let bwdAssign b (x,e) = match x with
     | A_var x ->
@@ -242,7 +278,7 @@ module Numerical(N: NUMERICAL)(C: CONSTRAINT): PARTITION = struct
     | _ -> raise (Invalid_argument "bwdAssign: unexpected lvalue")
 
 
-  let filter_underapprox (t:t) (e:bExp) : t = 
+(*  let filter_underapprox (t:t) (e:bExp) : t = 
     if not N.supports_underapproximation then
       raise (Invalid_argument "Underapproximation not supported by this abstract domain, use octagons or polyhedra instead");
     let env = t.env in
@@ -254,7 +290,7 @@ module Numerical(N: NUMERICAL)(C: CONSTRAINT): PARTITION = struct
     let pre = top in (* use top as pre environment *)
     let filtered = BanalApron.bwd_filter at bot () expr () pre in
     let result = of_apron_t env vars filtered in 
-    result
+    result  *)
 
 
   let rec filter b e =

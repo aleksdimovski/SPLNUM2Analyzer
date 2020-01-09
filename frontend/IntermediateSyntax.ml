@@ -17,6 +17,7 @@ let position_tostring p = Printf.sprintf "%s:%i:%i" p.pos_fname p.pos_lnum (p.po
 type typ =
   | I_INT
   | I_UINT
+  | I_CHAR
 
 type unaryOp =
   | I_PLUS  	(* + *)

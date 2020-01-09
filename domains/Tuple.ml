@@ -37,11 +37,11 @@ module type TUPLE = sig
 
   val fwdAssign : t -> aExp * aExp -> t
   val bwdAssign : t -> aExp * aExp -> t
-  val bwdAssign_underapprox : t -> aExp * aExp -> t
+(*  val bwdAssign_underapprox : t -> aExp * aExp -> t  *)
   val filter : t -> bExp -> t
   val config_filter : Environment.t -> t -> bExp -> t  
   val config_filter_not : Environment.t -> t -> t -> t   
-  val filter_underapprox : t -> bExp -> t
+(*  val filter_underapprox : t -> bExp -> t  *)
 
 
   val print : Format.formatter -> t -> unit

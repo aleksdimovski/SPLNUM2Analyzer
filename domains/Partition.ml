@@ -43,10 +43,12 @@ module type PARTITION = sig
   val meet : t -> t -> t
 
   val fwdAssign : t -> aExp * aExp -> t
+  val fwdAssign_project : t -> aExp * aExp -> Environment.t -> var list -> t
   val bwdAssign : t -> aExp * aExp -> t
-  val bwdAssign_underapprox : t -> aExp * aExp -> t
+(*  val bwdAssign_underapprox : t -> aExp * aExp -> t *)
   val filter : t -> bExp -> t
-  val filter_underapprox : t -> bExp -> t
+(*  val filter_underapprox : t -> bExp -> t  *)
+  val project : t -> Environment.t -> var list -> t
 
   val print : Format.formatter -> t -> unit
 

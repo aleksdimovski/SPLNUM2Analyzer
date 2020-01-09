@@ -13,16 +13,19 @@ open IntermediateSyntax
 type typ =
   | A_INT
   | A_UINT
+  | A_CHAR
   | A_BOOL
 
 let typ_print fmt = function
   | A_INT -> Format.fprintf fmt "int"
   | A_UINT -> Format.fprintf fmt "unsigned int"
+  | A_CHAR -> Format.fprintf fmt "char"
   | A_BOOL -> Format.fprintf fmt "bool"
 
 let typ_tostring = function
   | A_INT -> "int"
   | A_UINT -> "unsigned int"
+  | A_CHAR -> "char"
   | A_BOOL -> "bool"
 
 (* variables *)
@@ -185,6 +188,23 @@ let rec aExp_to_apron e =
      | A_MULTIPLY -> Texpr1.Binop (Texpr1.Mul,e1,e2,Texpr1.Int,Texpr1.Zero)
      | A_DIVIDE -> Texpr1.Binop (Texpr1.Div,e1,e2,Texpr1.Int,Texpr1.Zero)
 	 | A_MOD -> Texpr1.Binop (Texpr1.Mod,e1,e2,Texpr1.Int,Texpr1.Zero))
+
+let rec aExp_hasNoFeat e =
+  match e with
+  | A_RANDOM -> true
+  | A_URANDOM -> true
+  | A_var x -> true
+  | A_const i -> true
+  | A_interval (i1,i2) -> true
+  | A_aunary (o,(e,_)) ->
+    let b = aExp_hasNoFeat e in
+    (match o with
+     | A_UMINUS -> b)
+  | A_abinary (o,(e1,_),(e2,_)) ->
+    let e1 = aExp_hasNoFeat e1 in
+    let e2 = aExp_hasNoFeat e2 in
+    e1 && e2
+  | _ -> false
 
 (*let rec aInterval_to_bddapron env cond e =
   match e with
