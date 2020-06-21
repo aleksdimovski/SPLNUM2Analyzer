@@ -48,6 +48,12 @@ The tool requires the following applications and libraries:
 	opam install apron
 	```
 
+* BDDAPRON: numerical abstract domain library
+
+	```
+	opam install bddapron
+	```	
+	
 * Zarith: arbitrary-precision integer operations
 
 	```
@@ -62,7 +68,7 @@ Once all required libraries are installed, 'ocamlbuild' can be used to build lif
 ```
 eval $(opam config env)                 % It will setup environment variables, that are necessary for the toolchain to work properly
 
-ocamlbuild Main.native -use-ocamlfind -use-menhir -pkgs 'apron,gmp,oUnit,zarith' -I utils -I domains -I frontend -I main -libs boxMPQ,octD,polkaMPQ,str,zarith
+ocamlbuild Main.native -use-ocamlfind -use-menhir -pkgs 'bddapron,apron,gmp,oUnit,zarith' -I utils -I domains -I frontend -I main -libs boxMPQ,octD,polkaMPQ,str,zarith,bddapron
 ```
 
 # Usage
