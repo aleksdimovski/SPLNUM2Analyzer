@@ -1,5 +1,5 @@
 	//features bool A;
-features int[0,9] S1;
+features int[0,5] S1;
 
 int main() {
   int x=0;

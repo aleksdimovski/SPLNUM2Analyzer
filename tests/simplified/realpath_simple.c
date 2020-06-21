@@ -19,11 +19,18 @@ int main(int argc, char argv)
 {
 	int retval = 0;
 	int resolved_path_MUST_FREE; 
-#if (PATH_MAX > (BUFSIZ+1))
+#if (PATH_MAX0)
+	resolved_path_MUST_FREE = 0; 
+#endif	
+#if (PATH_MAX1)
 	resolved_path_MUST_FREE = 1; 
-#else
-	resolved_path_MUST_FREE = 0;
 #endif
+#if (PATH_MAX2)
+	resolved_path_MUST_FREE = 2; 
+#endif
+#if (PATH_MAX3)
+	resolved_path_MUST_FREE = 3; 
+#endif	
 
 	if (!++argv) {
 		;
@@ -36,6 +43,7 @@ int main(int argc, char argv)
 			retval = -1;
 			;
 		}
+		resolved_path_MUST_FREE--;
 	}
 
 
