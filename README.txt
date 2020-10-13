@@ -81,8 +81,12 @@ Log out of the current session, then log in and check:
 	```
 	echo $LD_LIBRARY_PATH
 	```
-	
-* Zarith: arbitrary-precision integer operations
+* BDDAPRON: numerical abstract domain library
+	```
+	opam install bddapron
+	```	
+
+	* Zarith: arbitrary-precision integer operations
 
 	```
 	opam install zarith
